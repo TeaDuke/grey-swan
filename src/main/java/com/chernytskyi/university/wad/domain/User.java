@@ -15,7 +15,7 @@ public class User {
 
     @Column(unique = true, nullable = false)
     private String username;
-    @Column(unique = true, nullable = false)
+    @Column(unique = false, nullable = false)
     private String password;
     @Column(unique = true, nullable = false)
     private String email;
@@ -102,7 +102,6 @@ public class User {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", image='" + image + '\'' +
                 ", reviews=" + reviews +

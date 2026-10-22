@@ -2,4 +2,5 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+      default_batch_fetch_size: 50
     show-sql: true

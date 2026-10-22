@@ -1,15 +1,16 @@
 package com.chernytskyi.university.wad.domain.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 
 public class UserRequest {
-    private Long id;
     @NotBlank(message = "username is mandatory")
     private String username;
     @NotBlank(message = "password is mandatory")
     private String password;
     @NotBlank(message = "email is mandatory")
+    @Email
     private String email;
     @NotEmpty(message = "image is mandatory")
     private byte[] image;

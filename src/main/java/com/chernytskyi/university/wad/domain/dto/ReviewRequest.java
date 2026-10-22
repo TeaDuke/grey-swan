@@ -1,20 +1,20 @@
 package com.chernytskyi.university.wad.domain.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 
 public class ReviewRequest {
 
     @Max(value = 10, message = "rating must be from 1 to 10")
     @Min(value = 1, message = "rating must be from 1 to 10")
+    @NotNull(message = "rating is mandatory")
     private Integer rating;
     @NotBlank(message = "comment is mandatory")
     private String comment;
     @Positive(message = "user id must be positive")
+    @NotNull(message = "user id is mandatory")
     private Long userId;
     @Positive(message = "movie id must be positive")
+    @NotNull(message = "user id is mandatory")
     private Long movieId;
 
     public ReviewRequest() {}

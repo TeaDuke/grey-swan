@@ -16,13 +16,6 @@ public class Genre {
     private String name;
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_genre_id")
-    private Genre parentGenre;
-
-    @OneToMany(mappedBy = "parentGenre")
-    private Set<Genre> subGenres = new HashSet<>();
-
     @ManyToMany(mappedBy = "genres")
     private Set<Movie> movies = new HashSet<>();
 
@@ -34,7 +27,6 @@ public class Genre {
     public Genre(String name, String description, Genre parentGenre) {
         this.name = name;
         this.description = description;
-        this.parentGenre = parentGenre;
     }
 
     public Long getId() {
@@ -55,14 +47,6 @@ public class Genre {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Genre getParentGenre() {
-        return parentGenre;
-    }
-
-    public void setParentGenre(Genre parentGenre) {
-        this.parentGenre = parentGenre;
     }
 
     public Set<Movie> getMovies() {
@@ -87,7 +71,6 @@ public class Genre {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", parentGenre=" + parentGenre +
                 '}';
     }
 }

@@ -2,7 +2,9 @@ package com.chernytskyi.university.wad.domain.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 import java.util.Set;
@@ -15,11 +17,13 @@ public class MovieRequest {
     @NotBlank(message = "director is mandatory")
     private String director;
     @Positive(message = "duration must be positive")
+    @NotNull
     private Integer duration; // minutes
     @Positive(message = "release year must be positive")
+    @NotNull
     private Integer releaseYear;
     @NotEmpty
-    private Set<Long> genreIds;
+    private Set<@NotNull @Positive Long> genreIds;
 
     public MovieRequest() {}
     public MovieRequest(String title, byte[] cover, String director, Integer duration, Integer releaseYear, Set<Long> genreIds) {

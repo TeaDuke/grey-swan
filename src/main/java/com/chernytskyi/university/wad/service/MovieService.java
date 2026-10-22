@@ -5,6 +5,7 @@ import com.chernytskyi.university.wad.domain.Movie;
 import com.chernytskyi.university.wad.domain.dto.GenreResponse;
 import com.chernytskyi.university.wad.domain.dto.MovieRequest;
 import com.chernytskyi.university.wad.domain.dto.MovieResponse;
+import com.chernytskyi.university.wad.exception.NoResourceException;
 import com.chernytskyi.university.wad.repository.GenreRepository;
 import com.chernytskyi.university.wad.repository.MovieRepository;
 import jakarta.transaction.Transactional;
@@ -34,7 +35,7 @@ public class MovieService implements RESTService<Movie, MovieRequest, MovieRespo
     @Override
     @Transactional
     public MovieResponse findById(Long id) throws NoSuchElementException {
-        return MovieResponse.from(movieRepository.findById(id).orElseThrow());
+        return MovieResponse.from(movieRepository.findById(id).orElseThrow(() -> new NoResourceException("Movie not found")));
     }
 
     @Override
@@ -47,7 +48,7 @@ public class MovieService implements RESTService<Movie, MovieRequest, MovieRespo
     @Override
     @Transactional
     public MovieResponse update(MovieRequest movieRequest, Long id) throws NoSuchElementException {
-        Movie movie = movieRepository.findById(id).orElseThrow();
+        Movie movie = movieRepository.findById(id).orElseThrow(() -> new NoResourceException("Movie not found"));
         movie.setTitle(movieRequest.getTitle());
         movie.setCover(movieRequest.getCover());
         movie.setDirector(movieRequest.getDirector());
@@ -60,12 +61,14 @@ public class MovieService implements RESTService<Movie, MovieRequest, MovieRespo
     @Override
     @Transactional
     public void delete(Long id) throws NoSuchElementException {
-        Movie movie = movieRepository.findById(id).orElseThrow();
+        Movie movie = movieRepository.findById(id).orElseThrow(() -> new NoResourceException("Movie not found"));
         movieRepository.delete(movie);
     }
 
     private Set<Genre> getGenres(Set<Long> genreIds) {
-        return genreIds.stream().map(g -> genreRepository.findById(g).orElseThrow()).collect(Collectors.toSet());
+        return genreIds.stream().map(g -> {
+            return genreRepository.findById(g).orElseThrow(() -> new NoResourceException("Genre not found"));
+        }).collect(Collectors.toSet());
     }
 
     private List<MovieResponse> fromList(List<Movie> movies) {

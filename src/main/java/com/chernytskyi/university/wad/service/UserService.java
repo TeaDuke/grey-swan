@@ -1,8 +1,12 @@
 package com.chernytskyi.university.wad.service;
 
+import com.chernytskyi.university.wad.domain.Movie;
+import com.chernytskyi.university.wad.domain.Review;
 import com.chernytskyi.university.wad.domain.User;
 import com.chernytskyi.university.wad.domain.dto.UserRequest;
 import com.chernytskyi.university.wad.domain.dto.UserResponse;
+import com.chernytskyi.university.wad.exception.NoResourceException;
+import com.chernytskyi.university.wad.repository.MovieRepository;
 import com.chernytskyi.university.wad.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,9 @@ public class UserService implements RESTService<User, UserRequest, UserResponse>
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private MovieRepository movieRepository;
+
 
     @Override
     @Transactional
@@ -27,7 +34,7 @@ public class UserService implements RESTService<User, UserRequest, UserResponse>
     @Override
     @Transactional
     public UserResponse findById(Long id) throws NoSuchElementException {
-        return UserResponse.from(userRepository.findById(id).orElseThrow());
+        return UserResponse.from(userRepository.findById(id).orElseThrow(() -> new NoResourceException("User not found")));
     }
 
     @Override
@@ -40,7 +47,7 @@ public class UserService implements RESTService<User, UserRequest, UserResponse>
     @Override
     @Transactional
     public UserResponse update(UserRequest userRequest, Long id) throws NoSuchElementException {
-        User user = userRepository.findById(id).orElseThrow();
+        User user = userRepository.findById(id).orElseThrow(() -> new NoResourceException("User not found"));
         user.setUsername(userRequest.getUsername());
 //        user.setPassword(userDTO.getPassword());
         user.setEmail(userRequest.getEmail());
@@ -51,7 +58,14 @@ public class UserService implements RESTService<User, UserRequest, UserResponse>
     @Override
     @Transactional
     public void delete(Long id) throws NoSuchElementException {
-        User user = userRepository.findById(id).orElseThrow();
+        User user = userRepository.findById(id).orElseThrow(() -> new NoResourceException("User not found"));
+        List<Review> reviews = user.getReviews();
+        reviews.forEach(review -> {
+            Movie movie = movieRepository.findById(review.getMovie().getId()).orElseThrow(() -> new NoResourceException("Movie not found"));
+            movie.setRatingCount(movie.getRatingCount()-1);
+            movie.setRatingSum(movie.getRatingSum()-review.getRating());
+            movieRepository.save(movie);
+        });
         userRepository.delete(user);
     }
 

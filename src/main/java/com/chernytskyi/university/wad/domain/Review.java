@@ -12,6 +12,7 @@ public class Review {
 
     private Integer rating;
     private String comment;
+    private Long publicationDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -28,6 +29,7 @@ public class Review {
         this.comment = comment;
         this.user = user;
         this.movie = movie;
+        this.publicationDate = System.currentTimeMillis();
     }
 
     public Long getId() {
@@ -62,6 +64,8 @@ public class Review {
         return movie;
     }
 
+    public Long getPublicationDate() { return publicationDate; }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -77,9 +81,10 @@ public class Review {
     @Override
     public String toString() {
         return "Review{" +
-                "comment='" + comment + '\'' +
+                " id=" + id +
+                ", comment='" + comment + '\'' +
                 ", rating=" + rating +
-                ", id=" + id +
+                ", publication_date=" + publicationDate +
                 '}';
     }
 }
