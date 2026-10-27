@@ -18,28 +18,28 @@ public class MovieController {
     @Autowired
     private MovieService movieService;
 
-    @GetMapping("/movies")
+    @GetMapping(value = "/movies", produces = "application/json")
     public List<MovieResponse> getMovies() {
         return movieService.findAll();
     }
 
-    @GetMapping("/movies/{id}")
+    @GetMapping(value = "/movies/{id}", produces = "application/json")
     public MovieResponse getMovie(@PathVariable Long id) {
         return movieService.findById(id);
     }
 
-    @PostMapping("/movies")
+    @PostMapping(value = "/movies",  produces = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public MovieResponse addMovie(@Valid @RequestBody MovieRequest movieRequest) {
         return movieService.add(movieRequest);
     }
 
-    @PutMapping("/movies/{id}")
+    @PutMapping(value = "/movies/{id}",  produces = "application/json")
     public MovieResponse updateMovie(@Valid @RequestBody MovieRequest movieRequest, @PathVariable Long id) {
         return movieService.update(movieRequest, id);
     }
 
-    @DeleteMapping("/movies/{id}")
+    @DeleteMapping(value = "/movies/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMovie(@PathVariable Long id) {
         movieService.delete(id);

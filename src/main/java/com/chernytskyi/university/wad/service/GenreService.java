@@ -41,8 +41,10 @@ public class GenreService implements RESTService<Genre, GenreRequest, GenreRespo
     @Transactional
     public GenreResponse update(GenreRequest genreRequest, Long id) throws NoSuchElementException {
         Genre genre = genreRepository.findById(id).orElseThrow(() -> new NoResourceException("Genre not found"));
-        genre.setName(genreRequest.getName());
-        genre.setDescription(genreRequest.getDescription());
+        if(genreRequest.getName() != null && !genreRequest.getName().isBlank())
+            genre.setName(genreRequest.getName());
+        if(genreRequest.getDescription() != null && !genreRequest.getDescription().isBlank())
+            genre.setDescription(genreRequest.getDescription());
         return GenreResponse.from(genreRepository.save(genre));
     }
 

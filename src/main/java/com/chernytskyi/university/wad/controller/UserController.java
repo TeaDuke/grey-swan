@@ -17,28 +17,28 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/users")
+    @GetMapping(value = "/users", produces = "application/json")
     public List<UserResponse> getUsers() {
         return userService.findAll();
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping(value = "/users/{id}", produces = "application/json")
     public UserResponse getUser(@PathVariable Long id) {
         return userService.findById(id);
     }
 
-    @PostMapping("/users")
+    @PostMapping(value = "/users",  produces = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse addUser(@Valid @RequestBody UserRequest userRequest) {
         return userService.add(userRequest);
     }
 
-    @PutMapping("/users/{id}")
+    @PutMapping(value = "/users/{id}",  produces = "application/json")
     public UserResponse updateUser(@Valid @RequestBody UserRequest userRequest, @PathVariable Long id) {
         return userService.update(userRequest, id);
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping(value = "/users/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Long id) {
         userService.delete(id);

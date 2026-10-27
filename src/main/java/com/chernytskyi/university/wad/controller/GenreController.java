@@ -18,28 +18,33 @@ public class GenreController {
     @Autowired
     private GenreService genreService;
 
-    @GetMapping("/genres")
+    @GetMapping(value = "/genres", produces = "application/json")
     public List<GenreResponse> getGenres() {
         return genreService.findAll();
     }
 
-    @GetMapping("/genres/{id}")
+    @GetMapping(value = "/genres/{id}", produces = "application/json")
     public GenreResponse getGenre(@PathVariable Long id) {
         return genreService.findById(id);
     }
 
-    @PostMapping("/genres")
+    @PostMapping(value = "/genres",  produces = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public GenreResponse addGenre(@Valid @RequestBody GenreRequest genreRequest) {
         return genreService.add(genreRequest);
     }
 
-    @PutMapping("/genres/{id}")
+    @PutMapping(value = "/genres/{id}",  produces = "application/json")
     public GenreResponse updateGenre(@Valid @RequestBody GenreRequest genreRequest, @PathVariable Long id) {
         return genreService.update(genreRequest, id);
     }
 
-    @DeleteMapping("/genres/{id}")
+    @PatchMapping(value = "/genres/{id}")
+    public GenreResponse updateGenrePatch(@RequestBody GenreRequest genreRequest, @PathVariable Long id) {
+        return genreService.update(genreRequest, id);
+    }
+
+    @DeleteMapping(value = "/genres/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteGenre(@PathVariable Long id) {
         genreService.delete(id);

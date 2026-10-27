@@ -5,6 +5,7 @@ import com.chernytskyi.university.wad.domain.dto.ReviewRequest;
 import com.chernytskyi.university.wad.domain.dto.ReviewResponse;
 import com.chernytskyi.university.wad.service.ReviewService;
 import jakarta.validation.Valid;
+import jdk.jfr.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,39 +19,39 @@ public class ReviewController {
     @Autowired
     private ReviewService reviewService;
 
-    @GetMapping("/reviews")
+    @GetMapping(value = "/reviews", produces = "application/json")
     public List<ReviewResponse> getReviews() {
         return reviewService.findAll();
     }
 
-    @GetMapping("/reviews/{id}")
+    @GetMapping(value = "/reviews/{id}", produces = "application/json")
     public ReviewResponse getReview(@PathVariable Long id) {
         return reviewService.findById(id);
     }
 
-    @PostMapping("/reviews")
+    @PostMapping(value = "/reviews",  produces = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public ReviewResponse addReview(@Valid @RequestBody ReviewRequest reviewRequest) {
         return reviewService.add(reviewRequest);
     }
 
-    @PutMapping("/reviews/{id}")
+    @PutMapping(value = "/reviews/{id}",  produces = "application/json")
     public ReviewResponse updateReview(@Valid @RequestBody ReviewRequest reviewRequest, @PathVariable Long id) {
         return reviewService.update(reviewRequest, id);
     }
 
-    @DeleteMapping("/reviews/{id}")
+    @DeleteMapping(value = "/reviews/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReview(@PathVariable Long id) {
         reviewService.delete(id);
     }
 
-    @GetMapping("/movies/{id}/reviews")
+    @GetMapping(value = "/movies/{id}/reviews", produces = "application/json")
     public List<ReviewResponse> getReviewsOfMovie(@PathVariable Long id) {
         return reviewService.findAllByMovieId(id);
     }
 
-    @GetMapping("/users/{id}/reviews")
+    @GetMapping(value = "/users/{id}/reviews", produces = "application/json")
     public List<ReviewResponse> getReviewsOfUser(@PathVariable Long id) {
         return reviewService.findAllByUserId(id);
     }
