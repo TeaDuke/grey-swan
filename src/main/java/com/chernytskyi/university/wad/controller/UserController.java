@@ -3,10 +3,13 @@ package com.chernytskyi.university.wad.controller;
 import com.chernytskyi.university.wad.domain.User;
 import com.chernytskyi.university.wad.domain.dto.UserRequest;
 import com.chernytskyi.university.wad.domain.dto.UserResponse;
+import com.chernytskyi.university.wad.security.AdminUtil;
 import com.chernytskyi.university.wad.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -27,20 +30,20 @@ public class UserController {
         return userService.findById(id);
     }
 
-    @PostMapping(value = "/users",  produces = "application/json")
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse addUser(@Valid @RequestBody UserRequest userRequest) {
-        return userService.add(userRequest);
-    }
+//    @PostMapping(value = "/users",  produces = "application/json")
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public UserResponse addUser(@Valid @RequestBody UserRequest userRequest) {
+//        return userService.add(userRequest);
+//    }
 
     @PutMapping(value = "/users/{id}",  produces = "application/json")
-    public UserResponse updateUser(@Valid @RequestBody UserRequest userRequest, @PathVariable Long id) {
-        return userService.update(userRequest, id);
+    public UserResponse updateUser(@Valid @RequestBody UserRequest userRequest, @PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        return userService.update(userRequest, id, jwt.getSubject());
     }
 
     @DeleteMapping(value = "/users/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable Long id) {
-        userService.delete(id);
+    public void deleteUser(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        userService.delete(id, jwt.getSubject(), AdminUtil.isAdmin(jwt));
     }
 }

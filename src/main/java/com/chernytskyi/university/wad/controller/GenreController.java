@@ -7,6 +7,7 @@ import com.chernytskyi.university.wad.service.GenreService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,9 @@ public class GenreController {
 
     @GetMapping(value = "/genres", produces = "application/json")
     public List<GenreResponse> getGenres() {
+        System.out.println(SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getAuthorities());
         return genreService.findAll();
     }
 

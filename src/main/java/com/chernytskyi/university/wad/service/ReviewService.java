@@ -5,6 +5,7 @@ import com.chernytskyi.university.wad.domain.Review;
 import com.chernytskyi.university.wad.domain.User;
 import com.chernytskyi.university.wad.domain.dto.ReviewRequest;
 import com.chernytskyi.university.wad.domain.dto.ReviewResponse;
+import com.chernytskyi.university.wad.exception.NoAccessException;
 import com.chernytskyi.university.wad.exception.NoResourceException;
 import com.chernytskyi.university.wad.repository.MovieRepository;
 import com.chernytskyi.university.wad.repository.ReviewRepository;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
-public class ReviewService implements RESTService<Review, ReviewRequest, ReviewResponse> {
+public class ReviewService {
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -27,42 +28,44 @@ public class ReviewService implements RESTService<Review, ReviewRequest, ReviewR
     @Autowired
     private UserRepository userRepository;
 
-    @Override
+    
     @Transactional
     public List<ReviewResponse> findAll() {
         return fromList(reviewRepository.findAll());
     }
 
-    @Override
+    
     @Transactional
     public ReviewResponse findById(Long id) throws NoSuchElementException {
         return ReviewResponse.from(reviewRepository.findById(id).orElseThrow(() -> new NoResourceException("Review not found")));
     }
 
-    @Override
+    
     @Transactional
-    public ReviewResponse add(ReviewRequest reviewRequest) {
+    public ReviewResponse add(ReviewRequest reviewRequest, String username) {
         Review review = new Review(reviewRequest.getRating(), reviewRequest.getComment(),
-                                   getUser(reviewRequest.getUserId()), getMovie(reviewRequest.getMovieId()));
+                                   getUserUsername(username), getMovie(reviewRequest.getMovieId()));
         updateMovieRating(review.getMovie().getId(), review.getRating(), 1);
         return ReviewResponse.from(reviewRepository.save(review));
     }
 
-    @Override
+    
     @Transactional
-    public ReviewResponse update(ReviewRequest reviewRequest, Long id) throws NoSuchElementException {
+    public ReviewResponse update(ReviewRequest reviewRequest, Long id, String username) throws NoSuchElementException {
         validateReviewRequest(reviewRequest);
         Review review = reviewRepository.findById(id).orElseThrow(() -> new NoResourceException("Review not found"));
+        if (!review.getUser().getUsername().equals(username)) throw new NoAccessException();
         updateMovieRating(review.getMovie().getId(), reviewRequest.getRating() - review.getRating(), 0);
         review.setRating(reviewRequest.getRating());
         review.setComment(reviewRequest.getComment());
         return ReviewResponse.from(reviewRepository.save(review));
     }
 
-    @Override
+    
     @Transactional
-    public void delete(Long id) throws NoSuchElementException {
+    public void delete(Long id, String username, Boolean isAdmin) throws NoSuchElementException {
         Review review = reviewRepository.findById(id).orElseThrow(() -> new NoResourceException("Review not found"));
+        if (!isAdmin && !review.getUser().getUsername().equals(username)) throw new NoAccessException();
         updateMovieRating(review.getMovie().getId(), -review.getRating(), -1);
         reviewRepository.delete(review);
     }
@@ -75,7 +78,7 @@ public class ReviewService implements RESTService<Review, ReviewRequest, ReviewR
 
     @Transactional
     public List<ReviewResponse> findAllByUserId(Long id) {
-        User user = getUser(id);
+        User user = getUserId(id);
         return fromList(reviewRepository.findAllByUser(user));
     }
 
@@ -83,8 +86,12 @@ public class ReviewService implements RESTService<Review, ReviewRequest, ReviewR
         return movieRepository.findById(id).orElseThrow(() -> new NoResourceException("Movie not found"));
     }
 
-    private User getUser(Long id) {
+    private User getUserId(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new NoResourceException("User not found"));
+    }
+
+    private User getUserUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new NoResourceException("User not found"));
     }
 
     private List<ReviewResponse> fromList(List<Review> reviews) {
@@ -98,7 +105,6 @@ public class ReviewService implements RESTService<Review, ReviewRequest, ReviewR
     }
 
     private void validateReviewRequest(ReviewRequest review) {
-        userRepository.findById(review.getUserId()).orElseThrow(() -> new NoResourceException("User not found"));
         movieRepository.findById(review.getMovieId()).orElseThrow(() -> new NoResourceException("Movie not found"));
     }
 }

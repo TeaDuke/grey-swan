@@ -10,19 +10,15 @@ public class ReviewRequest {
     private Integer rating;
     @NotBlank(message = "comment is mandatory")
     private String comment;
-    @Positive(message = "user id must be positive")
-    @NotNull(message = "user id is mandatory")
-    private Long userId;
     @Positive(message = "movie id must be positive")
     @NotNull(message = "user id is mandatory")
     private Long movieId;
 
     public ReviewRequest() {}
 
-    public ReviewRequest(Integer rating, String comment, Long userId, Long movieId) {
+    public ReviewRequest(Integer rating, String comment, Long movieId) {
         this.rating = rating;
         this.comment = comment;
-        this.userId = userId;
         this.movieId = movieId;
     }
 
@@ -32,10 +28,6 @@ public class ReviewRequest {
 
     public String getComment() {
         return comment;
-    }
-
-    public Long getUserId() {
-        return userId;
     }
 
     public Long getMovieId() {

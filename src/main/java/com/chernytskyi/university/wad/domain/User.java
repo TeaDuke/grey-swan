@@ -1,6 +1,8 @@
 package com.chernytskyi.university.wad.domain;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +21,16 @@ public class User {
     private String password;
     @Column(unique = true, nullable = false)
     private String email;
+    @Column // TODO: later add nullable false
+    @Enumerated(EnumType.STRING)
+    private RolesEnum role;
     private byte[] image;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RefreshToken> refreshTokens = new ArrayList<>();
 
     public User() {}
 
@@ -31,6 +39,7 @@ public class User {
         this.password = password;
         this.email = email;
         this.image = image;
+        this.role = RolesEnum.USER;
     }
 
     public User(User user) {
@@ -73,6 +82,14 @@ public class User {
         this.email = email;
     }
 
+    public RolesEnum getRole() {
+        return role;
+    }
+
+    public void setRole(RolesEnum role) {
+        this.role = role;
+    }
+
     public byte[] getImage() {
         return image;
     }
@@ -84,6 +101,8 @@ public class User {
     public List<Review> getReviews() {
         return reviews;
     }
+
+    public List<RefreshToken> getRefreshTokens() { return refreshTokens; }
 
     @Override
     public boolean equals(Object o) {

@@ -1,6 +1,8 @@
 package com.chernytskyi.university.wad.controller;
 
+import com.chernytskyi.university.wad.exception.NoAccessException;
 import com.chernytskyi.university.wad.exception.NoResourceException;
+import com.chernytskyi.university.wad.exception.UsernameAlreadyUsedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -8,6 +10,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -80,6 +83,30 @@ public class GlobalExceptionHandler {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR, "A database operation failed.");
         problem.setTitle("Database error");
+        return problem;
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ProblemDetail handleAuthenticationException(AuthenticationException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED, "Authentication failed");
+        problem.setTitle("Authentication failed");
+        return problem;
+    }
+
+    @ExceptionHandler(UsernameAlreadyUsedException.class)
+    public ProblemDetail handleUsernameAlreadyUsedException(UsernameAlreadyUsedException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT, "Username already used");
+        problem.setTitle("Username already used");
+        return problem;
+    }
+
+    @ExceptionHandler(NoAccessException.class)
+    public ProblemDetail handleNoAccessException(NoAccessException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.FORBIDDEN, "No access rights for this api");
+        problem.setTitle("No access rights");
         return problem;
     }
 }
